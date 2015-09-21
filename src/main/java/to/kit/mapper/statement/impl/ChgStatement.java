@@ -20,6 +20,8 @@ public final class ChgStatement extends ProgramStatement {
 	 */
 	public ChgStatement(final LineInfo line) {
 		super(line);
+		String v = line.get(1);
+		// TODO
 		for (String param : line) {
 			// INPUT$
 			if (!param.startsWith("<")) {

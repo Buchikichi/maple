@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import to.kit.mapper.statement.ProgramStatement;
 import to.kit.mapper.statement.impl.LabelStatement;
 import to.kit.mapper.statement.impl.RunStatement;
@@ -12,6 +15,9 @@ import to.kit.mapper.window.Win;
 import to.kit.mapper.window.WinDialog;
 
 public final class ProgramUnit {
+	/** Logger. */
+	private static final Logger LOG = LoggerFactory.getLogger(ProgramUnit.class);
+
 	/** ソースファイル. */
 	private final String src;
 	/** ステートメント. */
@@ -94,7 +100,7 @@ public final class ProgramUnit {
 		ProgramStatement stmt = this.firstStatement;
 
 		while (stmt != null) {
-System.out.println(stmt.getLine());
+			LOG.debug("{}", stmt.getLine());
 			ProgramStatement nextStmt = stmt.execute();
 			if (stmt instanceof RunStatement) {
 				nextId = ((RunStatement) stmt).getNextId();

@@ -21,7 +21,9 @@ public final class ElseStatement extends ProgramStatement {
 	public ProgramStatement execute() {
 		ProgramStatement stmt = getNext();
 		for (;;) {
-			if (stmt instanceof Nop) {
+			String cmd = stmt.getLine().peek();
+
+			if (cmd.startsWith("@")) {
 				break;
 			}
 			stmt = stmt.getNext();

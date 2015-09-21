@@ -1,5 +1,7 @@
 package to.kit.mapper.statement;
 
+import java.util.Arrays;
+
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.program.ProgramUnit;
 
@@ -21,6 +23,12 @@ public abstract class ProgramStatement {
 	 */
 	protected ProgramStatement(final LineInfo line) {
 		this.line = line;
+	}
+
+	protected String[] getFirstElements() {
+		String[] elements = this.line.peek().split(",");
+
+		return Arrays.copyOfRange(elements, 1, elements.length);
 	}
 
 	/**

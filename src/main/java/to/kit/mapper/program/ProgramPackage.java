@@ -56,9 +56,6 @@ public final class ProgramPackage extends HashMap<String, ProgramUnit> {
 						line = StringUtils.chop(line);
 						lf++;
 					}
-					if (line.matches("@[A-Z]+.*")) {
-						line = line.substring(1);
-					}
 					buff.append(line);
 				}
 				if (!isContinues) {
@@ -79,12 +76,11 @@ public final class ProgramPackage extends HashMap<String, ProgramUnit> {
 	 * @throws IOException 入出力例外
 	 */
 	private ProgramUnit load(final String runId) throws IOException {
-		String key = StringUtils.defaultString(runId, this.env.getProperty(KEY_RUN_ID));
-		String filename = "/" + this.env.getProperty(key);
+		String filename = "/" + this.env.getProperty(runId);
 		List<LineInfo> list;
 
-		if (containsKey(key)) {
-			return get(key);
+		if (containsKey(runId)) {
+			return get(runId);
 		}
 		LOG.debug("Load:" + filename);
 		String buff = format(filename);
@@ -93,12 +89,12 @@ public final class ProgramPackage extends HashMap<String, ProgramUnit> {
 			MapperTokenizer tokenizer = new MapperTokenizer(input);
 			list = tokenizer.getList();
 		}
-System.out.println(StringUtils.join(list, "\n"));
+//System.out.println(StringUtils.join(list, "\n"));
 		ProgramUnit unit = new ProgramUnit(filename);
 		for (LineInfo line : list) {
 			unit.addStatement(StatementUtils.getStatement(line));
 		}
-		put(key, unit);
+		put(runId, unit);
 		return unit;
 	}
 
@@ -107,7 +103,7 @@ System.out.println(StringUtils.join(list, "\n"));
 	 * @throws IOException 入出力例外
 	 */
 	public void execute() throws IOException {
-		String nextRunId = null;
+		String nextRunId = this.env.getProperty(KEY_RUN_ID);
 
 		for (;;) {
 			ProgramUnit unit = load(nextRunId);
