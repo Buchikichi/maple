@@ -9,7 +9,7 @@ import org.apache.commons.lang3.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import to.kit.mapper.io.Loader;
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.program.Variable;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.ProgramStatement;
@@ -20,7 +20,7 @@ import to.kit.mapper.statement.ProgramStatement;
  */
 public final class LdvStatement extends ProgramStatement {
 	/** Logger. */
-	private static final Logger LOG = LoggerFactory.getLogger(Loader.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LdvStatement.class);
 	private String option;
 	private List<Variable> varList = new ArrayList<>();
 
@@ -35,13 +35,13 @@ public final class LdvStatement extends ProgramStatement {
 	 * インスタンスを生成.
 	 * @param params パラメーター
 	 */
-	public LdvStatement(String... params) {
+	public LdvStatement(final LineInfo line) {
 		// @LDV[,o] v=vld[,v=vld,...,v=vld] .
 		// @LDV,o v[,v,...,v] .
 		// @LDV,Q rv=iv,n[(delim),rv=iv,n(delim),...,rv=iv,n(delim)] .
 		// o{C:center, P:pack, R:right-justifies, U:upper, Z:R&zero-fills}
-
-		for (String param : params) {
+		super(line);
+		for (String param : line) {
 			if (param.matches("[A-Z]")) {
 				this.option = param;
 				continue;

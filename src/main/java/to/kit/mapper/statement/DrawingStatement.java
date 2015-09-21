@@ -2,8 +2,12 @@ package to.kit.mapper.statement;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 
 public abstract class DrawingStatement extends ProgramStatement {
 	/** 親コンテナー. */
@@ -16,6 +20,14 @@ public abstract class DrawingStatement extends ProgramStatement {
 	private int height;
 	private String color;
 	private String bgColor;
+
+	/**
+	 * インスタンスを生成.
+	 * @param line Line
+	 */
+	public DrawingStatement(final LineInfo line) {
+		super(line);
+	}
 
 	/**
 	 * Gets a point.
@@ -38,9 +50,6 @@ public abstract class DrawingStatement extends ProgramStatement {
 		this.posY = NumberUtils.toInt(params[ix++]);
 		this.posX = NumberUtils.toInt(params[ix++]);
 		this.height = NumberUtils.toInt(params[ix++]);
-if (ix == 9) {
-	System.out.println(params);
-}
 		this.width = NumberUtils.toInt(params[ix++]);
 		if (params.length <= ix) {
 			return ix;
@@ -68,7 +77,11 @@ if (ix == 9) {
 		return this.name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		if (StringUtils.isBlank(name) || ".".equals(name)) {
+			this.name = UUID.randomUUID().toString();
+		} else {
+			this.name = name;
+		}
 	}
 	public String getCaption() {
 		return this.caption;

@@ -1,13 +1,9 @@
 package to.kit.mapper.program;
 
 import java.awt.Component;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import to.kit.mapper.statement.ProgramStatement;
 import to.kit.mapper.statement.impl.LabelStatement;
@@ -16,12 +12,8 @@ import to.kit.mapper.window.Win;
 import to.kit.mapper.window.WinDialog;
 
 public final class ProgramUnit {
-	/** Logger. */
-	private static final Logger LOG = LoggerFactory.getLogger(ProgramUnit.class);
 	/** ソースファイル. */
-	private final File src;
-	/** RUN-ID. */
-	private final String runId;
+	private final String src;
 	/** ステートメント. */
 	private ProgramStatement firstStatement;
 	/** 最後のステートメント. */
@@ -34,11 +26,9 @@ public final class ProgramUnit {
 	/**
 	 * インスタンス生成.
 	 * @param file ソースファイル
-	 * @param id RUN-ID
 	 */
-	public ProgramUnit(File file, String id) {
-		this.src = file;
-		this.runId = id;
+	public ProgramUnit(String filename) {
+		this.src = filename;
 	}
 
 	/**
@@ -103,8 +93,8 @@ public final class ProgramUnit {
 		String nextId = null;
 		ProgramStatement stmt = this.firstStatement;
 
-		LOG.info(this.runId + "@" + this.src.getName());
 		while (stmt != null) {
+System.out.println(stmt.getLine());
 			ProgramStatement nextStmt = stmt.execute();
 			if (stmt instanceof RunStatement) {
 				nextId = ((RunStatement) stmt).getNextId();
@@ -133,8 +123,8 @@ public final class ProgramUnit {
 		}
 		this.latestStatement = statement;
 	}
-	public String getRunId() {
-		return this.runId;
+	public String getSrc() {
+		return this.src;
 	}
 	public ProgramStatement getStatement() {
 		return this.firstStatement;

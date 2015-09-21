@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.OP;
 import to.kit.mapper.statement.ProgramStatement;
@@ -21,10 +22,12 @@ public final class IfStatement extends ProgramStatement {
 	 * インスタンスを生成.
 	 * @param params パラメーター
 	 */
-	public IfStatement(String... params) {
+	public IfStatement(final LineInfo line) {
+		super(line);
 		boolean isLeft = true;
 
-		for (String param : params) {
+		for (int ix = 1; ix < line.size(); ix++) {
+			String param = line.get(ix);
 			OP op = OP.get(param);
 			if (op != null) {
 				if (OP.NOT.equals(this.operator)) {
@@ -71,7 +74,7 @@ public final class IfStatement extends ProgramStatement {
 		if (!isSatisfied()) {
 			ProgramStatement stmt = getNext();
 			for (;;) {
-				if (stmt instanceof ElseStatement || stmt instanceof Nop) {
+				if (stmt instanceof ElseStatement || stmt instanceof GtoStatement) {
 					stmt = stmt.getNext();
 					break;
 				}

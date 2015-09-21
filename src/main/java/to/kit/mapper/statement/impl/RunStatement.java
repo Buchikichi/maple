@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.ProgramStatement;
 
@@ -21,7 +22,9 @@ public final class RunStatement extends ProgramStatement {
 	 * インスタンスを生成.
 	 * @param line 行
 	 */
-	public RunStatement(String... params) {
+	public RunStatement(final LineInfo line) {
+		super(line);
+		String[] params = line.toArray(new String[line.size()]);
 		this.nextId = params[0];
 		if (params.length < 2) {
 			return;

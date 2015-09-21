@@ -3,8 +3,7 @@ package to.kit.mapper.statement.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.DrawingStatement;
@@ -27,13 +26,15 @@ public final class TxtStatement extends DrawingStatement {
 	 * インスタンス生成.
 	 * @param params パラメーター
 	 */
-	public TxtStatement(String... params) {
+	public TxtStatement(final LineInfo line) {
+		super(line);
 		// Format1: @TXT[,c,d,r,l,q,vwh,vert,hort,vsiz,hsiz,fc/bc,o] [vth] .
 		// Format2: @TXT[,"text",vwh,vert,hort,vsiz,hsiz,fc/bc,o] [vth] .
-//		System.out.println("\t" + params.length + ":" + StringUtils.join(params, "|"));
-		String text = params[0];
+		String[] params = line.toArray(new String[line.size()]);
+		String text = params[1];
+		boolean isFormat2 = text.startsWith("\"");
 
-		if (!text.startsWith("\"")) {
+		if (!isFormat2) {
 if (text.startsWith("-")) return; // TODO 後でなおす
 			this.cdr.add(text);
 			this.cdr.add(params[1]);
@@ -49,30 +50,15 @@ if (text.startsWith("-")) return; // TODO 後でなおす
 			setName(params[ix]); // 13
 			return;
 		}
-		setCaption(params[0]);
-		setParent(params[1]);
-		if (params.length <= 2) {
+		//  14:[TXT,|"本番系に接続しています"|,<WIN000>,001,001,001,126,BLA/GRE,C|.]
+		setCaption(text);
+		String[] elements = params[2].substring(1).split(",");
+		setParent(elements[0]);
+		setPosAndColor(elements, 1);
+		if (params.length <= 3) {
 			return;
 		}
-		int ix = setPosAndColor(params, 2);
-		if (params.length <= ix) {
-			return;
-		}
-		String str = params[ix];
-		if (params.length == ix) {
-			setName(str);
-			return;
-		}
-//		setColor(str);
-		String un = params[7];
-		if (".".equals(un)) {
-			return;
-		}
-//		setBgColor(un);
-		if (params.length < 9) {
-			return;
-		}
-		setName(params[8]);
+		setName(params[3]);
 	}
 
 	@Override

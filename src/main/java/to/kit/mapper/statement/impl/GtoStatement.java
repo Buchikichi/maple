@@ -1,19 +1,24 @@
 package to.kit.mapper.statement.impl;
 
-import org.apache.commons.lang3.StringUtils;
-
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.statement.ProgramStatement;
 
+/**
+ * GTO.
+ * @author Hidetaka Sasai
+ */
 public final class GtoStatement extends ProgramStatement {
 	/** 行き先ラベル. */
 	private String label;
 
-	public GtoStatement(String... params) {
-		this.label = params[0];
-		if (params.length != 1) {
-			System.out.println("\t" + params.length + ":" + StringUtils.join(params, "|"));
-		}
+	/**
+	 * インスタンスを生成.
+	 * @param line Line
+	 */
+	public GtoStatement(final LineInfo line) {
+		super(line);
+		this.label = line.get(1);
 	}
 
 	@Override

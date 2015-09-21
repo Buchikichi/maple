@@ -3,6 +3,7 @@ package to.kit.mapper.statement.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.statement.ProgramStatement;
 
 /**
@@ -17,10 +18,11 @@ public final class LabelStatement extends ProgramStatement {
 
 	/**
 	 * インスタンスを生成.
-	 * @param currentLabel ラベル
+	 * @param line Line
 	 */
-	public LabelStatement(String currentLabel) {
-		this.label = currentLabel;
+	public LabelStatement(final LineInfo line) {
+		super(line);
+		this.label = line.peek().replaceAll("[@:]", "");
 	}
 
 	@Override

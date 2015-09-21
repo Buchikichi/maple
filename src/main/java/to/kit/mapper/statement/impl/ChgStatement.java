@@ -3,6 +3,7 @@ package to.kit.mapper.statement.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.ProgramStatement;
 
@@ -13,8 +14,13 @@ import to.kit.mapper.statement.ProgramStatement;
 public final class ChgStatement extends ProgramStatement {
 	private List<String> list = new ArrayList<>();
 
-	public ChgStatement(String... params) {
-		for (String param : params) {
+	/**
+	 * インスタンスを生成.
+	 * @param line Line
+	 */
+	public ChgStatement(final LineInfo line) {
+		super(line);
+		for (String param : line) {
 			// INPUT$
 			if (!param.startsWith("<")) {
 				continue;

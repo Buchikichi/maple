@@ -1,5 +1,6 @@
 package to.kit.mapper.statement.impl;
 
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.statement.ProgramStatement;
 
 /**
@@ -10,9 +11,10 @@ import to.kit.mapper.statement.ProgramStatement;
 public class FndStatement extends ProgramStatement {
 	/**
 	 * インスタンスを生成.
-	 * @param params パラメーター
+	 * @param line Line
 	 */
-	public FndStatement(String... params) {
+	public FndStatement(final LineInfo line) {
+		super(line);
 		// @FND,c,d[,r,l,lab] o cc ltyp,p [vrpt,vlno] .
 		// cc 検索位置
 		// p  検索文字

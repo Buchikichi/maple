@@ -1,5 +1,6 @@
 package to.kit.mapper.statement.impl;
 
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.statement.ProgramStatement;
 
 /**
@@ -8,6 +9,14 @@ import to.kit.mapper.statement.ProgramStatement;
  * @author Hidetaka Sasai.
  */
 public final class ElseStatement extends ProgramStatement {
+	/**
+	 * インスタンスを生成.
+	 * @param line Line
+	 */
+	public ElseStatement(final LineInfo line) {
+		super(line);
+	}
+
 	@Override
 	public ProgramStatement execute() {
 		ProgramStatement stmt = getNext();

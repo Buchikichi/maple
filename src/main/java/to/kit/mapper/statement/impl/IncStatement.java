@@ -3,6 +3,7 @@ package to.kit.mapper.statement.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.ProgramStatement;
 
@@ -18,10 +19,12 @@ public final class IncStatement extends ProgramStatement {
 
 	/**
 	 * インスタンスを生成.
-	 * @param params パラメーター
+	 * @param line Line
 	 */
-	public IncStatement(String... params) {
+	public IncStatement(final LineInfo line) {
+		super(line);
 		// @INC[,n] v[,v,...,v] .
+		String[] params = line.toArray(new String[line.size()]);
 		if (params.length == 1) {
 			this.name = params[0];
 		} else {

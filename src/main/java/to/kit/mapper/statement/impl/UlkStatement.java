@@ -1,5 +1,6 @@
 package to.kit.mapper.statement.impl;
 
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.statement.ProgramStatement;
 
 /**
@@ -9,9 +10,9 @@ import to.kit.mapper.statement.ProgramStatement;
 public class UlkStatement extends ProgramStatement {
 	/**
 	 * インスタンスを生成.
-	 * @param params パラメーター
+	 * @param line Line
 	 */
-	public UlkStatement(String... params) {
-		// nop
+	public UlkStatement(final LineInfo line) {
+		super(line);
 	}
 }
