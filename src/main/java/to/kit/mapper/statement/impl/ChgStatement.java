@@ -13,20 +13,29 @@ import to.kit.mapper.statement.ProgramStatement;
  */
 public final class ChgStatement extends ProgramStatement {
 	private List<String> list = new ArrayList<>();
+	/** Variable. */
+	private String v;
+	/** Reserved word. */
+	private String rw;
 
 	/**
 	 * インスタンスを生成.
 	 * @param line Line
 	 */
 	public ChgStatement(final LineInfo line) {
+		// @CHG v {exp|vld} .
+		// @CHG rw v[,v,...,v] .
 		super(line);
-		String v = line.get(1);
-		// TODO
-		for (String param : line) {
-			// INPUT$
-			if (!param.startsWith("<")) {
-				continue;
-			}
+		String str = line.get(1);
+		boolean isFormat2 = str.endsWith("$");
+
+		if (!isFormat2) {
+			this.v = str;
+			// TODO
+			return;
+		}
+		this.rw = str;
+		for (String param : line.get(2).split(",")) {
 			this.list.add(param);
 		}
 	}

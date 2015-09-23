@@ -24,7 +24,7 @@ public final class RunStatement extends ProgramStatement {
 	 */
 	public RunStatement(final LineInfo line) {
 		super(line);
-		String[] params = line.toArray(new String[line.size()]);
+		String[] params = line.get(1).split(",");
 		this.nextId = params[0];
 		if (params.length < 2) {
 			return;

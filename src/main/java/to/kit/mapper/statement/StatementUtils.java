@@ -36,6 +36,7 @@ public final class StatementUtils {
 		} catch (ClassNotFoundException | SecurityException | IllegalArgumentException e) {
 			// nop
 			e.printStackTrace();
+			return null;
 		}
 		ProgramStatement stmt = null;
 

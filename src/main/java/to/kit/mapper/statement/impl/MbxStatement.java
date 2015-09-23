@@ -100,6 +100,8 @@ public final class MbxStatement extends ProgramStatement {
 				label = act.getLab();
 			} else if ("N".equals(cd) && rc == JOptionPane.NO_OPTION) {
 				label = act.getLab();
+			} else if ("O".equals(cd) && rc == JOptionPane.OK_OPTION) {
+				label = act.getLab();
 			}
 			if (StringUtils.isNotBlank(label)) {
 				break;

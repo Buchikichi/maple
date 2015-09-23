@@ -74,6 +74,11 @@ public final class IfStatement extends ProgramStatement {
 		if (!isSatisfied()) {
 			ProgramStatement stmt = getNext();
 			for (;;) {
+				String cmd = stmt.getLine().peek();
+
+				if (cmd.startsWith("@")) {
+					break;
+				}
 				if (stmt instanceof ElseStatement || stmt instanceof GtoStatement) {
 					stmt = stmt.getNext();
 					break;

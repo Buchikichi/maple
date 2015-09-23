@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import to.kit.mapper.io.MapperTokenizer;
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
+import to.kit.mapper.statement.ProgramStatement;
 import to.kit.mapper.statement.StatementUtils;
 
 /**
@@ -92,7 +93,12 @@ public final class ProgramPackage extends HashMap<String, ProgramUnit> {
 //System.out.println(StringUtils.join(list, "\n"));
 		ProgramUnit unit = new ProgramUnit(filename);
 		for (LineInfo line : list) {
-			unit.addStatement(StatementUtils.getStatement(line));
+			ProgramStatement stmt = StatementUtils.getStatement(line);
+
+			if (stmt == null) {
+				continue;
+			}
+			unit.addStatement(stmt);
 		}
 		put(runId, unit);
 		return unit;

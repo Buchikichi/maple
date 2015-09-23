@@ -59,8 +59,10 @@ public final class InpStatement extends ProgramStatement {
 			WaitInfo info = null;
 			String[] vf = params[0].split(",");
 
-			this.vfocus = vf[1];
-			this.vinput = vf[3];
+			if (1 < vf.length) {
+				this.vfocus = vf[1];
+				this.vinput = vf[3];
+			}
 			for (String element : params[1].split(",")) {
 				if (info == null) {
 					info = new WaitInfo(element);
@@ -73,7 +75,7 @@ public final class InpStatement extends ProgramStatement {
 			}
 			return;
 		}
-		for (String element : params[0].split(",")) {
+		for (String element : getFirstElements()) {
 			if (!element.startsWith("<")) {
 				continue;
 			}
@@ -85,7 +87,8 @@ public final class InpStatement extends ProgramStatement {
 	private ProgramStatement executeDialog() {
 		VariableManager var = VariableManager.getInstance();
 		ProgramUnit unit = getUnit();
-		WinDialog dialog = (WinDialog) unit.findWin(this.vinput);
+		String winName = StringUtils.defaultString(this.vinput);
+		WinDialog dialog = (WinDialog) unit.findWin(winName);
 
 		for (WaitInfo info : this.waitList) {
 			String label = info.getLab();
