@@ -1,94 +1,79 @@
 package to.kit.mapper.program;
 
-import java.awt.Component;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import to.kit.mapper.io.Loader;
+import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.statement.ProgramStatement;
+import to.kit.mapper.statement.StatementUtils;
 import to.kit.mapper.statement.impl.LabelStatement;
 import to.kit.mapper.statement.impl.RunStatement;
-import to.kit.mapper.window.Win;
-import to.kit.mapper.window.WinDialog;
+import to.kit.mapper.window.WinManager;
 
+/**
+ * プログラム単位.
+ * @author Hidetaka Sasai
+ */
+@Component
+@Scope("prototype")
 public final class ProgramUnit {
 	/** Logger. */
 	private static final Logger LOG = LoggerFactory.getLogger(ProgramUnit.class);
 
-	/** ソースファイル. */
-	private final String src;
+	/** ソースファイル名. */
+	private String src;
 	/** ステートメント. */
 	private ProgramStatement firstStatement;
-	/** 最後のステートメント. */
-	private ProgramStatement latestStatement;
 	/** ラベル. */
 	private final Map<String, LabelStatement> labelMap = new HashMap<>();
-	/** WINマップ. */
-	private final Map<String, Win> winMap = new TreeMap<>();
+	/** WINマネージャー. */
+	private WinManager winManager = new WinManager();
+	/** プログラムローダー. */
+	@Autowired
+	private Loader loader;
 
 	/**
-	 * インスタンス生成.
-	 * @param file ソースファイル
+	 * プログラムをロードする.
+	 * @param filename ファイル名
+	 * @param charset Charset
+	 * @throws IOException 入出力例外
 	 */
-	public ProgramUnit(String filename) {
+	public void load(final String filename, final Charset charset) throws IOException {
+		LOG.debug("Load[{}]", filename);
+		List<LineInfo> list = this.loader.load(filename, charset);
+
 		this.src = filename;
-	}
+		//LOG.debug(StringUtils.join(list, "\n"));
+		ProgramStatement latestStatement = null;
+		for (LineInfo line : list) {
+			ProgramStatement stmt = StatementUtils.getStatement(line);
 
-	/**
-	 * WINを追加.
-	 * @param name WIN名
-	 * @param win WIN
-	 */
-	public void addWin(String name, Win win) {
-		this.winMap.put(name, win);
-	}
-
-	/**
-	 * WINを取得.
-	 * @param name WIN名
-	 * @return WIN
-	 */
-	public Win getWin(String name) {
-		return this.winMap.get(name);
-	}
-
-	/**
-	 * WINを取得.
-	 * @param name WIN名もしくはコントロール名
-	 * @return WIN
-	 */
-	public Win findWin(String name) {
-		Win win = this.winMap.get(name);
-
-		if (win != null) {
-			return win;
-		}
-		for (Map.Entry<String, Win> entry : this.winMap.entrySet()) {
-			WinDialog wk = (WinDialog) entry.getValue();
-			Map<String, Component> compMap = wk.getCompMap();
-
-			if (compMap.containsKey(name)) {
-				win = wk;
-				break;
+			if (stmt == null) {
+				continue;
 			}
-		}
-		return win;
-	}
-
-	public Win getLatestWin() {
-		Win latest = null;
-
-		for (Map.Entry<String, Win> entry : this.winMap.entrySet()) {
-			WinDialog win = (WinDialog) entry.getValue();
-
-			if (win.isVisible()) {
-				latest = win;
+			stmt.setUnit(this);
+			if (this.firstStatement == null) {
+				this.firstStatement = stmt;
 			}
+			if (stmt instanceof LabelStatement) {
+				LabelStatement label = (LabelStatement) stmt;
+				this.labelMap.put(label.getLabel(), label);
+			}
+			if (latestStatement != null) {
+				latestStatement.setNext(stmt);
+			}
+			latestStatement = stmt;
 		}
-		return latest;
 	}
 
 	/**
@@ -112,30 +97,25 @@ public final class ProgramUnit {
 	}
 
 	/**
-	 * ステートメントを追加する.
-	 * @param statement ステートメント
+	 * ソースファイル名を取得.
+	 * @return ソースファイル名
 	 */
-	public void addStatement(ProgramStatement statement) {
-		statement.setUnit(this);
-		if (this.firstStatement == null) {
-			this.firstStatement = statement;
-		}
-		if (statement instanceof LabelStatement) {
-			LabelStatement stmt = (LabelStatement) statement;
-			this.labelMap.put(stmt.getLabel(), stmt);
-		}
-		if (this.latestStatement != null) {
-			this.latestStatement.setNext(statement);
-		}
-		this.latestStatement = statement;
-	}
 	public String getSrc() {
 		return this.src;
 	}
-	public ProgramStatement getStatement() {
-		return this.firstStatement;
-	}
+	/**
+	 * ラベルを取得
+	 * @param label ラベル
+	 * @return ラベル
+	 */
 	public LabelStatement getLabelStatement(String label) {
 		return this.labelMap.get(label);
+	}
+	/**
+	 * WinManagerを取得.
+	 * @return WinManager
+	 */
+	public WinManager getWinManager() {
+		return this.winManager;
 	}
 }

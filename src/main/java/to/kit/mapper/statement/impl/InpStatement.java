@@ -3,14 +3,12 @@ package to.kit.mapper.statement.impl;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JTextField;
 
 import org.apache.commons.lang3.StringUtils;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.ProgramStatement;
 import to.kit.mapper.window.WinDialog;
@@ -44,7 +42,7 @@ public final class InpStatement extends ProgramStatement {
 
 	/**
 	 * インスタンスを生成.
-	 * @param params パラメーター
+	 * @param line Line
 	 */
 	public InpStatement(final LineInfo line) {
 		super(line);
@@ -86,23 +84,21 @@ public final class InpStatement extends ProgramStatement {
 
 	private ProgramStatement executeDialog() {
 		VariableManager var = VariableManager.getInstance();
-		ProgramUnit unit = getUnit();
 		String winName = StringUtils.defaultString(this.vinput);
-		WinDialog dialog = (WinDialog) unit.findWin(winName);
+		WinDialog dialog = this.unit.getWinManager().find(winName);
 
 		for (WaitInfo info : this.waitList) {
 			String label = info.getLab();
-			LabelStatement labelStatement = unit.getLabelStatement(label);
+			LabelStatement labelStatement = this.unit.getLabelStatement(label);
 
 			dialog.addEvent(info.getVwh(), labelStatement);
 		}
 		if (dialog != null) {
 			dialog.setModal(true);
+			dialog.setVisible(false);
 			dialog.setVisible(true);
-			Map<String, Component> compMap = dialog.getCompMap();
-			for (Map.Entry<String, Component> entry : compMap.entrySet()) {
-				String name = entry.getKey();
-				Component comp = entry.getValue();
+			for (Component comp : dialog.getContentPane().getComponents()) {
+				String name = comp.getName();
 
 				if (comp instanceof JTextField) {
 					JTextField edt = (JTextField) comp;

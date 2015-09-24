@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
+import to.kit.mapper.window.WinDialog;
 
 public abstract class DrawingStatement extends ProgramStatement {
 	/** 親コンテナー. */
@@ -29,23 +30,7 @@ public abstract class DrawingStatement extends ProgramStatement {
 		super(line);
 	}
 
-	/**
-	 * Gets a point.
-	 * @return Point
-	 */
-	public Point getPoint() {
-		return new Point(this.posX, this.posY);
-	}
-
-	/**
-	 * Gets a rectangle.
-	 * @return Rectangle
-	 */
-	public Rectangle getRectangle() {
-		return new Rectangle(this.posX, this.posY, this.width, this.height);
-	}
-
-	public int setPosAndColor(String[] params, int origin) {
+	protected int setPosAndColor(String[] params, int origin) {
 		int ix = origin;
 		this.posY = NumberUtils.toInt(params[ix++]);
 		this.posX = NumberUtils.toInt(params[ix++]);
@@ -65,6 +50,26 @@ public abstract class DrawingStatement extends ProgramStatement {
 		}
 		this.bgColor = params[ix++];
 		return ix;
+	}
+
+	protected WinDialog getParentWindow() {
+		return (WinDialog) this.unit.getWinManager().get(getParent());
+	}
+
+	/**
+	 * Gets a point.
+	 * @return Point
+	 */
+	public Point getPoint() {
+		return new Point(this.posX, this.posY);
+	}
+
+	/**
+	 * Gets a rectangle.
+	 * @return Rectangle
+	 */
+	public Rectangle getRectangle() {
+		return new Rectangle(this.posX, this.posY, this.width, this.height);
 	}
 
 	public String getParent() {

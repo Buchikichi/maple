@@ -4,12 +4,16 @@ import java.awt.Point;
 import java.awt.Rectangle;
 
 public interface Win {
+	public static final int CHAR_WIDTH = 8;
+	public static final int CHAR_HEIGHT = 16;
+
 	/**
 	 * TXTを追加.
 	 * @param p Point
 	 * @param text テキスト
+	 * @param color 色
 	 */
-	void addLabel(Point p, String text);
+	void addLabel(Point p, String text, String color);
 	/**
 	 * BTNを追加.
 	 * @param name 名前

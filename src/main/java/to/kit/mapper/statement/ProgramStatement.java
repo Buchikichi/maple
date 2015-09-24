@@ -12,10 +12,10 @@ import to.kit.mapper.program.ProgramUnit;
 public abstract class ProgramStatement {
 	/** 行情報. */
 	private final LineInfo line;
-	/** ユニット. */
-	private ProgramUnit unit;
 	/** 次のステートメント. */
 	private ProgramStatement next;
+	/** ユニット. */
+	protected ProgramUnit unit;
 
 	/**
 	 * インスタンスを生成.
@@ -41,9 +41,6 @@ public abstract class ProgramStatement {
 
 	public LineInfo getLine() {
 		return this.line;
-	}
-	public ProgramUnit getUnit() {
-		return this.unit;
 	}
 	public void setUnit(ProgramUnit unit) {
 		this.unit = unit;

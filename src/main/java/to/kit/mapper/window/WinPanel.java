@@ -12,9 +12,6 @@ import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
 
 public final class WinPanel extends JPanel implements Win {
-	public static final int CHAR_WIDTH = 8;
-	public static final int CHAR_HEIGHT = 16;
-
 	private SpringLayout mgr = new SpringLayout();
 
 	/**
@@ -50,7 +47,7 @@ public final class WinPanel extends JPanel implements Win {
 	}
 
 	@Override
-	public void addLabel(Point p, String text) {
+	public void addLabel(Point p, String text, String color) {
 		JLabel label = new JLabel(text);
 
 		addComponent(p, label);

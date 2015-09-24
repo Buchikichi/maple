@@ -37,7 +37,7 @@ public class RdlStatement extends ProgramStatement {
 
 	/**
 	 * インスタンスを生成.
-	 * @param params パラメーター
+	 * @param line Line
 	 */
 	public RdlStatement(final LineInfo line) {
 		super(line);
@@ -68,7 +68,6 @@ public class RdlStatement extends ProgramStatement {
 
 	@Override
 	public ProgramStatement execute() {
-		ProgramUnit unit = getUnit();
 		VariableManager mgr = VariableManager.getInstance();
 		int currentLine = NumberUtils.toInt(mgr.getValue(this.lineNumber));
 
@@ -77,7 +76,7 @@ public class RdlStatement extends ProgramStatement {
 		}
 		if (this.label != null && 10 < currentLine - this.startLine) {
 			// TODO このロジックは嘘なので削除する
-			return unit.getLabelStatement(this.label);
+			return this.unit.getLabelStatement(this.label);
 		}
 		return super.execute();
 	}

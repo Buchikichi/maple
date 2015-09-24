@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.DrawingStatement;
 import to.kit.mapper.statement.ProgramStatement;
@@ -64,14 +63,14 @@ if (text.startsWith("-")) return; // TODO 後でなおす
 	@Override
 	public ProgramStatement execute() {
 		VariableManager var = VariableManager.getInstance();
-		ProgramUnit unit = getUnit();
-		Win win = unit.getWin(getParent());
+		Win win = getParentWindow();
 		String caption = var.getValue(getCaption());
 
 		if (win == null) {
-			win = unit.getLatestWin();
+			//win = unit.getLatestWin();
+			throw new UnsupportedOperationException();
 		}
-		win.addLabel(getPoint(), caption);
+		win.addLabel(getPoint(), caption, getColor());
 		return super.execute();
 	}
 }

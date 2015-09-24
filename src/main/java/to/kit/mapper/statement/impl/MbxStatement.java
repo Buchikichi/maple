@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang3.StringUtils;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.ProgramStatement;
 import to.kit.mapper.window.WinDialog;
@@ -73,8 +72,6 @@ public final class MbxStatement extends ProgramStatement {
 	@Override
 	public ProgramStatement execute() {
 		VariableManager var = VariableManager.getInstance();
-		ProgramUnit unit = getUnit();
-		WinDialog win = (WinDialog) unit.getLatestWin();
 		int optionType;
 		if ("YN".equals(this.buttons)) {
 			optionType = JOptionPane.YES_NO_OPTION;
@@ -89,6 +86,7 @@ public final class MbxStatement extends ProgramStatement {
 		} else {
 			messageType = JOptionPane.INFORMATION_MESSAGE;
 		}
+		WinDialog win = this.unit.getWinManager().getLatest();
 		String message = var.getValue(this.msg);
 		int rc = JOptionPane.showConfirmDialog(win, message, this.caption, optionType, messageType);
 		String label = null;
@@ -107,7 +105,7 @@ public final class MbxStatement extends ProgramStatement {
 				break;
 			}
 		}
-		LabelStatement stmt = unit.getLabelStatement(var.getValue(label));
+		LabelStatement stmt = this.unit.getLabelStatement(var.getValue(label));
 		if (stmt != null) {
 			return stmt;
 		}

@@ -1,26 +1,16 @@
 package to.kit.mapper.program;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import to.kit.mapper.io.MapperTokenizer;
-import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.statement.ProgramStatement;
-import to.kit.mapper.statement.StatementUtils;
 
 /**
  * プログラムパッケージ.
@@ -36,70 +26,28 @@ public final class ProgramPackage extends HashMap<String, ProgramUnit> {
 	/** プロパティ. */
 	@Autowired
 	private Environment env;
-
-	private String format(final String filename) throws IOException {
-		StringBuilder buff = new StringBuilder();
-
-		try (InputStream stream = ProgramPackage.class.getResourceAsStream(filename);
-				Reader in = new InputStreamReader(stream, this.env.getProperty("charset"))
-				;BufferedReader reader =new BufferedReader(in)) {
-			String line;
-			int lf = 1;
-
-			while ((line = reader.readLine()) != null) {
-				line = line.replaceAll("@[\\s]+", "@");
-				line = StringUtils.strip(line);
-				boolean isDiscarded = line.startsWith(".") || line.startsWith("*") || line.startsWith("@.");
-				boolean isContinues = line.endsWith("\\");
-
-				if (!isDiscarded) {
-					if (isContinues) {
-						line = StringUtils.chop(line);
-						lf++;
-					}
-					buff.append(line);
-				}
-				if (!isContinues) {
-					buff.append(StringUtils.repeat('\n', lf));
-					lf = 1;
-				}
-			}
-		}
-		String result = buff.toString();
-		result = result.replace("'/'", "\\n");
-		return result;
-	}
+	/** ApplicationContext. */
+	@Autowired
+	private ApplicationContext context;
 
 	/**
-	 * プログラムをロード.
+	 * プログラム単位を取得.
 	 * @param runId run-id
 	 * @return プログラム
 	 * @throws IOException 入出力例外
 	 */
-	private ProgramUnit load(final String runId) throws IOException {
-		String filename = "/" + this.env.getProperty(runId);
-		List<LineInfo> list;
-
+	private ProgramUnit getProgramUnit(final String runId) throws IOException {
+		if (!this.env.containsProperty(runId)) {
+			return null;
+		}
 		if (containsKey(runId)) {
 			return get(runId);
 		}
-		LOG.debug("Load:" + filename);
-		String buff = format(filename);
+		String filename = "/" + this.env.getProperty(runId);
+		Charset charset = Charset.forName(this.env.getProperty("charset"));
+		ProgramUnit unit = this.context.getBean(ProgramUnit.class);
 
-		try (Reader input = new StringReader(buff)) {
-			MapperTokenizer tokenizer = new MapperTokenizer(input);
-			list = tokenizer.getList();
-		}
-//System.out.println(StringUtils.join(list, "\n"));
-		ProgramUnit unit = new ProgramUnit(filename);
-		for (LineInfo line : list) {
-			ProgramStatement stmt = StatementUtils.getStatement(line);
-
-			if (stmt == null) {
-				continue;
-			}
-			unit.addStatement(stmt);
-		}
+		unit.load(filename, charset);
 		put(runId, unit);
 		return unit;
 	}
@@ -112,9 +60,10 @@ public final class ProgramPackage extends HashMap<String, ProgramUnit> {
 		String nextRunId = this.env.getProperty(KEY_RUN_ID);
 
 		for (;;) {
-			ProgramUnit unit = load(nextRunId);
+			ProgramUnit unit = getProgramUnit(nextRunId);
 
 			if (unit == null) {
+				LOG.info("END:{}", nextRunId);
 				break;
 			}
 			LOG.info(nextRunId + "@" + unit.getSrc());

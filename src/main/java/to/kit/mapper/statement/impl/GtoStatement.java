@@ -1,7 +1,6 @@
 package to.kit.mapper.statement.impl;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.statement.ProgramStatement;
 
 /**
@@ -23,8 +22,6 @@ public final class GtoStatement extends ProgramStatement {
 
 	@Override
 	public ProgramStatement execute() {
-		ProgramUnit unit = getUnit();
-
-		return unit.getLabelStatement(this.label);
+		return this.unit.getLabelStatement(this.label);
 	}
 }

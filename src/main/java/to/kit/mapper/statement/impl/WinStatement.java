@@ -1,13 +1,11 @@
 package to.kit.mapper.statement.impl;
 
-import java.awt.Frame;
-
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.DrawingStatement;
 import to.kit.mapper.statement.ProgramStatement;
 import to.kit.mapper.window.WinDialog;
+import to.kit.mapper.window.WinManager;
 
 /**
  * WIN.
@@ -36,13 +34,19 @@ public final class WinStatement extends DrawingStatement {
 	@Override
 	public ProgramStatement execute() {
 		VariableManager var = VariableManager.getInstance();
-		ProgramUnit unit = getUnit();
-		String parent = getParent();
 		String name = var.getPureName(getName());
-		Frame owner = null;
-		WinDialog panel = new WinDialog(owner, getCaption(), getRectangle());
+		WinManager winManager = this.unit.getWinManager();
 
-		unit.addWin(name, panel);
+		if (winManager.containsKey(name)) {
+			WinDialog win = (WinDialog) winManager.get(name);
+
+//			win.removeAll();
+		} else {
+			WinDialog owner = (WinDialog) winManager.get(getParent());
+			WinDialog panel = new WinDialog(owner, getCaption(), getRectangle());
+
+			winManager.put(name, panel);
+		}
 		return super.execute();
 	}
 }

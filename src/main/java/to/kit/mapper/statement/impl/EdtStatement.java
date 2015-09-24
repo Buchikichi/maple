@@ -1,7 +1,6 @@
 package to.kit.mapper.statement.impl;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.DrawingStatement;
 import to.kit.mapper.statement.ProgramStatement;
@@ -38,10 +37,9 @@ public final class EdtStatement extends DrawingStatement {
 	@Override
 	public ProgramStatement execute() {
 		VariableManager var = VariableManager.getInstance();
-		ProgramUnit unit = getUnit();
-		Win win = unit.getWin(getParent());
 		String name = var.getPureName(getName());
 		String value = var.getValue(getCaption());
+		Win win = getParentWindow();
 
 		win.addEdit(name, getRectangle(), value);
 		return super.execute();

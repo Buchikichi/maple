@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.statement.ProgramStatement;
 import to.kit.mapper.window.Win;
 import to.kit.mapper.window.WinDialog;
+import to.kit.mapper.window.WinManager;
 
 /**
  * SHW.(Show Control)
@@ -30,10 +30,10 @@ public final class ShwStatement extends ProgramStatement {
 
 	@Override
 	public ProgramStatement execute() {
-		ProgramUnit unit = getUnit();
+		WinManager winManager = this.unit.getWinManager();
 
 		for (String target : this.list) {
-			Win win = unit.getWin(target);
+			Win win = winManager.get(target);
 			if (win instanceof WinDialog) {
 				((WinDialog) win).setVisible(true);
 			}
