@@ -1,6 +1,8 @@
 package to.kit.mapper.statement.impl;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.math.NumberUtils;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
@@ -12,10 +14,10 @@ import to.kit.mapper.statement.ProgramStatement;
  * @author Hidetaka Sasai
  */
 public final class IncStatement extends ProgramStatement {
-	/** 変数名. */
-	private String name;
-	/** 値. */
-	private String value;
+	/** 増量. */
+	private int n = 1;
+	/** 変数. */
+	private List<String> variableList = new ArrayList<>();
 
 	/**
 	 * インスタンスを生成.
@@ -24,28 +26,25 @@ public final class IncStatement extends ProgramStatement {
 	public IncStatement(final LineInfo line) {
 		super(line);
 		// @INC[,n] v[,v,...,v] .
-		String[] params = line.toArray(new String[line.size()]);
-		if (params.length == 1) {
-			this.name = params[0];
-		} else {
-			this.name = params[1];
-			this.value = params[0];
+		String[] params = getFirstElements();
+		if (0 < params.length) {
+			this.n = NumberUtils.toInt(params[0]);
+		}
+		for (String element : line.get(1).split(",")) {
+			this.variableList.add(element);
 		}
 	}
 
 	@Override
 	public ProgramStatement execute() {
 		VariableManager mgr = VariableManager.getInstance();
-		int intValue = NumberUtils.toInt(mgr.getValue(this.name));
-		String newValue;
 
-		if (StringUtils.isBlank(this.value)) {
-			newValue = String.valueOf(++intValue); 
-		} else {
-			int augend = NumberUtils.toInt(mgr.getValue(this.value));
-			newValue = String.valueOf(intValue + augend); 
+		for (String name : this.variableList) {
+			int value = NumberUtils.toInt(mgr.getValue(name));
+			value += this.n;
+
+			mgr.put(name, String.valueOf(value));
 		}
-		mgr.put(this.name, newValue);
 		return super.execute();
 	}
 }
