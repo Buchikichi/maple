@@ -1,11 +1,14 @@
 package to.kit.mapper.program;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,7 @@ import org.springframework.stereotype.Component;
 import to.kit.mapper.io.Loader;
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.statement.ProgramStatement;
-import to.kit.mapper.statement.StatementUtils;
+import to.kit.mapper.statement.impl.ElseStatement;
 import to.kit.mapper.statement.impl.LabelStatement;
 import to.kit.mapper.statement.impl.RunStatement;
 import to.kit.mapper.window.WinManager;
@@ -29,6 +32,8 @@ import to.kit.mapper.window.WinManager;
 public final class ProgramUnit {
 	/** Logger. */
 	private static final Logger LOG = LoggerFactory.getLogger(ProgramUnit.class);
+	/** ステートメントのパッケージ名. */
+	private static final String STMT_PKG = RunStatement.class.getPackage().getName();
 
 	/** ソースファイル名. */
 	private String src;
@@ -41,6 +46,39 @@ public final class ProgramUnit {
 	/** プログラムローダー. */
 	@Autowired
 	private Loader loader;
+
+	@SuppressWarnings("unchecked")
+	private ProgramStatement getStatement(final LineInfo line) {
+		if (line.isLabel()) {
+			return new LabelStatement(line);
+		}
+		String cmd = line.getCommand();
+		if (";".equals(cmd)) {
+			return new ElseStatement(line);
+		}
+		String simpleName = StringUtils.capitalize(cmd.toLowerCase());
+		simpleName = simpleName.replace("+", "Plus");
+		String className = STMT_PKG + '.' + simpleName + "Statement";
+		Class<? extends ProgramStatement> clazz = null;
+
+		try {
+			clazz = (Class<ProgramStatement>) Class.forName(className);
+		} catch (ClassNotFoundException | SecurityException | IllegalArgumentException e) {
+			// nop
+			e.printStackTrace();
+			return null;
+		}
+		ProgramStatement stmt = null;
+
+		try {
+			stmt = ConstructorUtils.invokeConstructor(clazz, new Object[] { line });
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException e) {
+			// nop
+			e.printStackTrace();
+		}
+		return stmt;
+	}
 
 	/**
 	 * プログラムをロードする.
@@ -56,7 +94,7 @@ public final class ProgramUnit {
 		//LOG.debug(StringUtils.join(list, "\n"));
 		ProgramStatement latestStatement = null;
 		for (LineInfo line : list) {
-			ProgramStatement stmt = StatementUtils.getStatement(line);
+			ProgramStatement stmt = getStatement(line);
 
 			if (stmt == null) {
 				continue;
