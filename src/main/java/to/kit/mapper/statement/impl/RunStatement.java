@@ -49,6 +49,10 @@ public final class RunStatement extends ProgramStatement {
 	 * @return the nextId
 	 */
 	public String getNextId() {
-		return this.nextId;
+		VariableManager var = VariableManager.getInstance();
+		String value = var.getValue(this.nextId);
+
+		value = value.replace(".", "");
+		return value;
 	}
 }

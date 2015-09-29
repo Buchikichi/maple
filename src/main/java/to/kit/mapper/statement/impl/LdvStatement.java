@@ -33,7 +33,7 @@ public final class LdvStatement extends ProgramStatement {
 
 	/**
 	 * インスタンスを生成.
-	 * @param params パラメーター
+	 * @param line Line
 	 */
 	public LdvStatement(final LineInfo line) {
 		// @LDV[,o] v=vld[,v=vld,...,v=vld] .
@@ -41,11 +41,16 @@ public final class LdvStatement extends ProgramStatement {
 		// @LDV,Q rv=iv,n[(delim),rv=iv,n(delim),...,rv=iv,n(delim)] .
 		// o{C:center, P:pack, R:right-justifies, U:upper, Z:R&zero-fills}
 		super(line);
-		for (String param : line) {
-			if (param.matches("[A-Z]")) {
-				this.option = param;
-				continue;
-			}
+		String[] firstElements = getFirstElements();
+
+		if (0 < firstElements.length) {
+			this.option = firstElements[0];
+		}
+		StringBuilder buff = new StringBuilder();
+		for (int ix = 1; ix < line.size(); ix++) {
+			buff.append(line.get(ix));
+		}
+		for (String param : buff.toString().split(",")) {
 			if (param.contains("=")) {
 				String[] values = splitByEqual(param);
 

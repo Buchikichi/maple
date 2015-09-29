@@ -117,11 +117,16 @@ public final class MapperTokenizer extends StreamTokenizer {
 		return list;
 	}
 
+	/**
+	 * 分割済みの全ての行を取得.
+	 * @return 行情報一覧
+	 * @throws IOException 入出力例外
+	 */
 	public List<LineInfo> getList() throws IOException {
 		List<LineInfo> list = new ArrayList<>();
 
 		for (LineInfo line : load()) {
-			String cmd = line.getLine();
+			String cmd = line.peek();
 			boolean isDiscarded = cmd.startsWith(".") || cmd.startsWith("*") || cmd.startsWith("@.");
 
 			if (isDiscarded) {
@@ -138,6 +143,10 @@ public final class MapperTokenizer extends StreamTokenizer {
 		return list;
 	}
 
+	/**
+	 * 行情報.
+	 * @author Hidetaka Sasai
+	 */
 	public class LineInfo extends LinkedList<String> {
 		/** 行番号. */
 		private final int num;
@@ -149,11 +158,17 @@ public final class MapperTokenizer extends StreamTokenizer {
 		LineInfo(int lineno) {
 			this.num = lineno;
 		}
-		public boolean isLabel() {
-			return peek().matches("@[0-9]+[:]*");
-		}
+		/**
+		 * コマンドを取得.
+		 * @return コマンド
+		 */
 		public String getCommand() {
 			String peek = peek();
+			boolean isLabel = peek.matches("@[0-9]+[:]*");
+
+			if (isLabel) {
+				return "label";
+			}
 			int ix = peek.indexOf(',');
 			int beginIndex = peek.startsWith("@") ? 1 : 0;
 
@@ -162,13 +177,22 @@ public final class MapperTokenizer extends StreamTokenizer {
 			} else {
 				peek = peek.substring(beginIndex);
 			}
+			if (";".equals(peek)) {
+				return "else";
+			}
+			peek = peek.replace("+", "Plus");
+			boolean isLiteral = !peek.matches("[A-Z]+");
+			if (isLiteral) {
+				return "sc";
+			}
 			return peek;
 		}
+		/**
+		 * 行番号を取得.
+		 * @return 行番号
+		 */
 		public int getNum() {
 			return this.num;
-		}
-		public String getLine() {
-			return StringUtils.join(this, ' ');
 		}
 		@Override
 		public String toString() {

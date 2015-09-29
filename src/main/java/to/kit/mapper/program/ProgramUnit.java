@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import to.kit.mapper.io.Loader;
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
 import to.kit.mapper.statement.ProgramStatement;
-import to.kit.mapper.statement.impl.ElseStatement;
 import to.kit.mapper.statement.impl.LabelStatement;
 import to.kit.mapper.statement.impl.RunStatement;
 import to.kit.mapper.window.WinManager;
@@ -49,17 +48,10 @@ public final class ProgramUnit {
 
 	@SuppressWarnings("unchecked")
 	private ProgramStatement getStatement(final LineInfo line) {
-		if (line.isLabel()) {
-			return new LabelStatement(line);
-		}
 		String cmd = line.getCommand();
-		if (";".equals(cmd)) {
-			return new ElseStatement(line);
-		}
 		String simpleName = StringUtils.capitalize(cmd.toLowerCase());
-		simpleName = simpleName.replace("+", "Plus");
 		String className = STMT_PKG + '.' + simpleName + "Statement";
-		Class<? extends ProgramStatement> clazz = null;
+		Class<? extends ProgramStatement> clazz;
 
 		try {
 			clazz = (Class<ProgramStatement>) Class.forName(className);

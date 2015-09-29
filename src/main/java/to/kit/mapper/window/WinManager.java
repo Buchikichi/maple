@@ -2,8 +2,10 @@ package to.kit.mapper.window;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang3.StringUtils;
-
+/**
+ * Winマネージャー.
+ * @author Hidetaka Sasai
+ */
 public final class WinManager extends HashMap<String, Win> {
 	private Win latest;
 
@@ -11,11 +13,37 @@ public final class WinManager extends HashMap<String, Win> {
 		return (WinDialog) this.latest;
 	}
 
-	public WinDialog find(String name) {
-		if (StringUtils.isBlank(name)) {
-			return getLatest();
+	public WinDialog scan(String name) {
+		WinDialog result = null;
+
+		for (Entry<String, Win> entry : entrySet()) {
+			WinDialog dialog = (WinDialog) entry.getValue();
+
+			if (dialog.getComponent(name) != null) {
+				result = dialog;
+				break;
+			}
 		}
-		return (WinDialog) get(name);
+		return result;
+	}
+
+	public WinDialog find(String... targets) {
+		WinDialog win = null;
+
+		for (String target : targets) {
+			win = (WinDialog) get(target);
+			if (win != null) {
+				break;
+			}
+			win = scan(target);
+			if (win != null) {
+				break;
+			}
+		}
+		if (win == null) {
+			win = getLatest();
+		}
+		return win;
 	}
 
 	@Override

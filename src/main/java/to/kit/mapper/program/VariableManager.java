@@ -48,16 +48,19 @@ public final class VariableManager extends HashMap<String, String> {
 	 * @param name 変数名
 	 * @return 変数名
 	 */
-	public String getPureName(String name) {
-		int ix = name.lastIndexOf('>');
+	public String getPureName(final String name) {
+		String pureName = StringUtils.defaultString(name);
+		int ix = pureName.lastIndexOf('>');
 
-		return name.substring(0, ix + 1);
+		if (ix == -1) {
+			return pureName;
+		}
+		return pureName.substring(0, ix + 1);
 	}
 
 	/**
 	 * 変数を追加.
 	 * @param var 変数名
-	 * @param value 値
 	 */
 	public void queue(String var) {
 		String value = getValue(var);

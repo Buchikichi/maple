@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import to.kit.mapper.io.MapperTokenizer.LineInfo;
-import to.kit.mapper.program.ProgramUnit;
 import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.ProgramStatement;
 
@@ -46,19 +45,27 @@ public class RdlStatement extends ProgramStatement {
 		// lab ラベル
 		// cc 取得位置
 		// vdata 変数
-		for (String param : line) {
-			if (!param.startsWith("-") && (param.contains("-") || param.contains("'"))) {
-				this.ccList.add(param);
-			} else if (!this.ccList.isEmpty() && param.contains("<")) {
-				this.vdataList.add(param);
-			} else if (param.matches("0[0-9]+")) {
-				this.label = param;
+		int c = 1;
+
+		for (String elem : getFirstElements()) {
+			if (this.cdr.size() < 3 && 0 < c) {
+				if (this.cdr.isEmpty()) {
+					c = NumberUtils.toInt(elem);
+				}
+				this.cdr.add(elem);
+				continue;
+			}
+			if (this.lineNumber == null) {
+				this.lineNumber = elem;
 			} else {
-				this.cdr.add(param);
+				this.label = elem;
 			}
-			if (this.lineNumber == null && !this.ccList.isEmpty()) {
-				this.lineNumber = this.cdr.pollLast();
-			}
+		}
+		for (String elem : line.get(1).split(",")) {
+			this.ccList.add(elem);
+		}
+		for (String elem : line.get(2).split(",")) {
+			this.vdataList.add(elem);
 		}
 		LOG.debug("[{}]", StringUtils.join(line, '|'));
 		String msg = String.format(" %s_%s.%s.%s_%s]", StringUtils.join(this.cdr, '|'), this.lineNumber, this.label,
