@@ -3,6 +3,9 @@ package to.kit.mapper.program;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,16 +32,30 @@ public final class VariableManager extends HashMap<String, String> {
 	 * @param something 変数かどうかわからない何か
 	 * @return 値
 	 */
-	public String getValue(String something) {
+	public String getValue(final String something) {
 		String value = StringUtils.defaultString(something);
 		boolean isVariable = value.startsWith("<");
+		Matcher m = Pattern.compile("[<][^<>]+[>]").matcher(value);
+		Map<String, String> replaceMap = new HashMap<>();
 
 		if (isVariable) {
-			return get(getPureName(something));
+			value = getPureName(something);
+		}
+		while (m.find()) {
+			String target = m.group();
+
+			replaceMap.put(target, StringUtils.defaultString(get(target)));
+		}
+		for (Map.Entry<String, String> entry : replaceMap.entrySet()) {
+			value = value.replace(entry.getKey(), entry.getValue());
 		}
 		value = value.replace("'/'", "\n");
-		if (value.startsWith("'") || value.startsWith("\"") || value.startsWith("(")) {
-			value = value.substring(1, value.length() - 1);
+		if (value.startsWith("'")) {
+			value = StringUtils.strip(value, "'");
+		} else if (value.startsWith("\"")) {
+			value = StringUtils.strip(value, "\"");
+		} else if (value.startsWith("(")) {
+			value = StringUtils.strip(value, "(");
 		}
 		return value;
 	}

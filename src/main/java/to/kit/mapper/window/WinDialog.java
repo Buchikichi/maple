@@ -1,6 +1,5 @@
 package to.kit.mapper.window;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -31,8 +30,9 @@ public final class WinDialog extends JDialog implements Win {
 	 * @param owner オーナーウィンドウ
 	 * @param title タイトル
 	 * @param r Rectangle
+	 * @param color 色
 	 */
-	public WinDialog(Window owner, String title, Rectangle r) {
+	public WinDialog(final Window owner, final String title, final Rectangle r, final String color) {
 		super(owner);
 		setTitle(title);
 		setLayout(this.mgr);
@@ -41,6 +41,7 @@ public final class WinDialog extends JDialog implements Win {
 		int width = left + r.width * CHAR_WIDTH;
 		int height = top + r.height * CHAR_HEIGHT;
 		setBounds(left, top, width, height);
+		ColorUtils.setColor(this.getContentPane(), color);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
@@ -109,31 +110,11 @@ public final class WinDialog extends JDialog implements Win {
 		return this.labelStatement;
 	}
 
-	public Color getColor(String color) {
-		Color result = Color.BLACK;
-
-		if (StringUtils.isBlank(color)) {
-			return result;
-		}
-		if (color.startsWith("BLA")) {
-			result = Color.BLACK;
-		} else if (color.startsWith("BLU")) {
-			result = Color.BLUE;
-		} else if (color.startsWith("RED")) {
-			result = Color.RED;
-		} else if (color.startsWith("WHI")) {
-			result = Color.WHITE;
-		} else {
-			result = Color.PINK;
-		}
-		return result;
-	}
-
 	@Override
 	public void addLabel(Point p, String text, String color) {
 		JLabel label = new JLabel(text);
 
-		label.setForeground(getColor(color));
+		ColorUtils.setColor(label, color);
 		addComponent(null, p, label);
 	}
 	@Override

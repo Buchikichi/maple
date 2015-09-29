@@ -43,7 +43,9 @@ public final class WinStatement extends DrawingStatement {
 //			win.removeAll();
 		} else {
 			WinDialog owner = (WinDialog) winManager.get(getParent());
-			WinDialog panel = new WinDialog(owner, getCaption(), getRectangle());
+			String caption = var.getValue(getCaption());
+			String color = var.getValue(getColor());
+			WinDialog panel = new WinDialog(owner, caption, getRectangle(), color);
 
 			winManager.put(name, panel);
 		}

@@ -22,8 +22,8 @@ public final class TxtStatement extends DrawingStatement {
 	private String lines;
 
 	/**
-	 * インスタンス生成.
-	 * @param params パラメーター
+	 * インスタンスを生成.
+	 * @param line Line
 	 */
 	public TxtStatement(final LineInfo line) {
 		super(line);

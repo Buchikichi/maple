@@ -10,9 +10,13 @@ import to.kit.mapper.program.VariableManager;
 import to.kit.mapper.statement.OP;
 import to.kit.mapper.statement.ProgramStatement;
 
+/**
+ * IF.
+ * @author Hidetaka Sasai
+ */
 public final class IfStatement extends ProgramStatement {
 	/** 左辺. */
-	private List<String> left = new ArrayList<>();
+	private String left;
 	/** 演算子. */
 	private OP operator;
 	/** 右辺. */
@@ -20,13 +24,13 @@ public final class IfStatement extends ProgramStatement {
 
 	/**
 	 * インスタンスを生成.
-	 * @param params パラメーター
+	 * @param line Line
 	 */
 	public IfStatement(final LineInfo line) {
 		super(line);
 		boolean isLeft = true;
 
-		for (int ix = 1; ix < line.size(); ix++) {
+		for (int ix = 1/* form 1 */; ix < line.size(); ix++) {
 			String param = line.get(ix);
 			OP op = OP.get(param);
 			if (op != null) {
@@ -39,7 +43,7 @@ public final class IfStatement extends ProgramStatement {
 				continue;
 			}
 			if (isLeft) {
-				this.left.add(param);
+				this.left = param;
 			} else {
 				this.right.add(param);
 			}
@@ -52,11 +56,8 @@ public final class IfStatement extends ProgramStatement {
 	private boolean isSatisfied() {
 		VariableManager mgr = VariableManager.getInstance();
 		boolean isSatisfied = false;
-		String leftValue = null;
+		String leftValue = StringUtils.defaultString(mgr.getValue(this.left));
 
-		for (String var : this.left) {
-			leftValue = StringUtils.defaultString(mgr.getValue(var));
-		}
 		for (String var : this.right) {
 			String rightValue = StringUtils.defaultString(mgr.getValue(var));
 

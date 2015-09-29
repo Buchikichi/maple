@@ -20,7 +20,7 @@ public abstract class DrawingStatement extends ProgramStatement {
 	private int width;
 	private int height;
 	private String color;
-	private String bgColor;
+	private String opt;
 
 	/**
 	 * インスタンスを生成.
@@ -48,7 +48,7 @@ public abstract class DrawingStatement extends ProgramStatement {
 		if (params.length <= ix) {
 			return ix;
 		}
-		this.bgColor = params[ix++];
+		this.opt = params[ix++];
 		return ix;
 	}
 
@@ -103,7 +103,7 @@ public abstract class DrawingStatement extends ProgramStatement {
 	public String getColor() {
 		return this.color;
 	}
-	public String getBgColor() {
-		return this.bgColor;
+	public String getOpt() {
+		return this.opt;
 	}
 }
