@@ -54,8 +54,6 @@ public final class VariableManager extends HashMap<String, String> {
 			value = StringUtils.strip(value, "'");
 		} else if (value.startsWith("\"")) {
 			value = StringUtils.strip(value, "\"");
-		} else if (value.startsWith("(")) {
-			value = StringUtils.strip(value, "(");
 		}
 		return value;
 	}

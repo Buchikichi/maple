@@ -105,7 +105,7 @@ public final class MbxStatement extends ProgramStatement {
 				break;
 			}
 		}
-		LabelStatement stmt = this.unit.getLabelStatement(var.getValue(label));
+		LabelStatement stmt = this.unit.getLabelStatement(label);
 		if (stmt != null) {
 			return stmt;
 		}

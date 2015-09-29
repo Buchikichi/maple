@@ -138,8 +138,8 @@ public final class ProgramUnit {
 	 * @param label ラベル
 	 * @return ラベル
 	 */
-	public LabelStatement getLabelStatement(String label) {
-		return this.labelMap.get(label);
+	public LabelStatement getLabelStatement(final String label) {
+		return this.labelMap.get(StringUtils.strip(label, "()"));
 	}
 	/**
 	 * WinManagerを取得.
